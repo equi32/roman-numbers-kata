@@ -1,3 +1,39 @@
 spring:
   application:
     name: Roman Numbers Kata
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+      indent-output: true
+
+info:
+  app:
+    name: Roman Numbers Kata
+    description: Spring Boot Application for converting between Arabic and Roman numbers
+    version: 1.0.0
+    encoding: @project.build.sourceEncoding@
+    java:
+      version: @java.version@
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      enabled: true
+      force: true
+  error:
+    include-messages: always
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  info:
+    env:
+      enabled: true

@@ -2,11 +2,13 @@ package com.kata.romannumbers.application;
 
 import com.kata.romannumbers.application.exception.InvalidArabicNumberException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Slf4j
+@Service
 public class ArabicToRomanNumberConverterUseCase implements ArabicToRomanNumberConverter {
 
     private static final Integer MIN_INT_VALUE = 1;

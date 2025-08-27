@@ -20,7 +20,7 @@ public class RomanToArabicNumberConverterTest {
 
     @BeforeEach
     void setUp() {
-        converter = new RomanToArabicNumberUseCase();
+        converter = new RomanToArabicNumberConverterUseCase();
     }
 
     @Nested

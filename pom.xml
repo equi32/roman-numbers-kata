@@ -15,7 +15,7 @@
     <artifactId>romannumbers</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>Roman Numbers Kata</name>
-    <description>Spring Boot Application for converting between Arabic and Roman numerals</description>
+    <description>Spring Boot Application for converting between Arabic and Roman numbers</description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
