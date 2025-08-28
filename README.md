@@ -46,7 +46,7 @@ Aplicación Spring Boot que proporciona servicios de conversión bidireccional e
 
 ## 🚀 Tecnologías
 
-- Java 17
+- Java 21
 - Spring Boot 3.5.5
 - Maven 3.9+
 - JUnit 5
@@ -56,31 +56,49 @@ Aplicación Spring Boot que proporciona servicios de conversión bidireccional e
 ## 📁 Estructura del Proyecto
 
 ```
-roman-numerals-kata/
+roman-numbers-kata/
 ├── src/
 │   ├── main/
-│   │   └── java/
-│   │       └── com/kata/romannumbers/
-│   │           ├── RomanNumbersKataApplication.java
-│   │           ├── infrastructure/
-│   │           │   └── RomanNumeralsController.java
-│   │           ├── application/
-│   │           │   ├── RomanNumeralsConverter.java
-│   │           │   └── impl/
-│   │           │       └── RomanNumeralsConverterImpl.java
-│   │           ├── domain/
-│   │           │   ├── InvalidRomanNumeralException.java
-│   │           │   ├── InvalidArabicNumberException.java
-│   │           │   └── GlobalExceptionHandler.java
-│   │           └── dto/
-│   │               └── ErrorResponse.java
+│   │   ├── java/
+│   │   │   └── com/kata/romannumbers/
+│   │   │       ├── RomanNumbersKataApplication.java
+│   │   │       ├── application/
+│   │   │       │   ├── ArabicToRomanNumberConverter.java
+│   │   │       │   ├── ArabicToRomanNumberConverterUseCase.java
+│   │   │       │   ├── RomanToArabicNumberConverter.java
+│   │   │       │   ├── RomanToArabicNumberConverterUseCase.java
+│   │   │       │   └── exception/
+│   │   │       │       ├── InvalidArabicNumberException.java
+│   │   │       │       └── InvalidRomanNumberException.java
+│   │   │       ├── domain/
+│   │   │       └── infrastructure/
+│   │   │           └── input/
+│   │   │               └── rest/
+│   │   │                   ├── ArabicToRomanNumberGetAdapter.java
+│   │   │                   ├── RomanToArabicNumberGetAdapter.java
+│   │   │                   ├── exception/
+│   │   │                   │   └── GlobalExceptionHandler.java
+│   │   │                   └── model/
+│   │   │                       ├── ArabicToRomanNumberResponse.java
+│   │   │                       ├── ErrorResponse.java
+│   │   │                       └── RomanToArabicNumberResponse.java
+│   │   └── resources/
+│   │       └── application.yml
 │   └── test/
 │       └── java/
-│           └── com/kata/romannumerals/
-│               ├── service/
-│               │   └── RomanNumeralsConverterTest.java
-│               └── controller/
-│                   └── RomanNumeralsControllerIntegrationTest.java
+│           └── com/kata/romannumbers/
+│               ├── RomanNumbersKataApplicationTests.java
+│               ├── application/
+│               │   ├── ArabicToRomanNumberConverterTest.java
+│               │   └── RomanToArabicNumberConverterTest.java
+│               └── infrastructure/
+│                   └── input/
+│                       └── rest/
+│                           ├── ArabicToRomanNumberGetAdapterTest.java
+│                           └── RomanToArabicNumberGetAdapterTest.java
+├── Dockerfile
+├── docker-compose.yml
+├── .dockerignore
 ├── pom.xml
 └── README.md
 ```
@@ -89,8 +107,8 @@ roman-numerals-kata/
 
 ### Prerrequisitos
 
-- JDK 21 o superior
-- Maven 3.9 o superior
+- JDK 21 o superior (El proyecto está configurado para Java 21)
+- Maven 3.9 o superior (o usar el Maven wrapper incluido)
 
 ### Clonar el repositorio
 
@@ -102,6 +120,10 @@ cd roman-numbers-kata
 ### Compilar el proyecto
 
 ```bash
+# Usando Maven wrapper (recomendado)
+./mvnw clean compile
+
+# O usando Maven local
 mvn clean compile
 ```
 
@@ -109,27 +131,64 @@ mvn clean compile
 
 ```bash
 # Todos los tests
-mvn test
+./mvnw test
 
 # Solo tests unitarios
-mvn test -Dtest=RomanNumeralsConverterTest
+./mvnw test -Dtest=ArabicToRomanNumberConverterTest,RomanToArabicNumberConverterTest
 
 # Solo tests de integración
-mvn test -Dtest=RomanNumeralsControllerIntegrationTest
+./mvnw test -Dtest=ArabicToRomanNumberGetAdapterTest,RomanToArabicNumberGetAdapterTest
 ```
 
 ### Ejecutar la aplicación
 
 ```bash
-# Opción 1: Usando Maven
-mvn spring-boot:run
+# Opción 1: Usando Maven wrapper
+./mvnw spring-boot:run
 
 # Opción 2: Generando el JAR
-mvn clean package
-java -jar target/roman-numerals-kata-1.0.0.jar
+./mvnw clean package
+java -jar target/romannumbers-1.0-SNAPSHOT.jar
 ```
 
 La aplicación estará disponible en: `http://localhost:8080`
+
+## 🐳 Ejecución con Docker
+
+### Prerrequisitos para Docker
+- Docker Desktop o Docker Engine
+- Docker Compose
+
+### Construir y ejecutar con Docker Compose
+
+```bash
+# Construir y ejecutar la aplicación
+docker-compose up --build
+
+# Ejecutar en modo background (detached)
+docker-compose up -d --build
+
+# Ver logs de la aplicación
+docker-compose logs -f roman-numbers-kata
+
+# Parar la aplicación
+docker-compose down
+```
+
+### Construir y ejecutar solo con Docker
+
+```bash
+# Construir la imagen
+docker build -t roman-numbers-kata .
+
+# Ejecutar el contenedor
+docker run -p 8080:8080 --name roman-numbers-kata roman-numbers-kata
+```
+
+La aplicación estará disponible en: `http://localhost:8080`
+
+### Health Check
+Docker incluye un health check que verifica el endpoint `/actuator/health` cada 30 segundos.
 
 ## 📡 API Endpoints
 
@@ -184,8 +243,8 @@ curl "http://localhost:8080/api/v1/roman-numbers/roman-to-arabic?roman=XLII"
 **Respuesta error (400):**
 ```json
 {
-  "error": "Invalid roman numeral",
-  "message": "Invalid roman numeral format: XZ"
+  "error": "Invalid Roman Number",
+  "message": "Invalid roman number format: XZ"
 }
 ```
 
@@ -246,31 +305,55 @@ Tests de integración usando Spring Boot Test:
 
 ## 📊 Cobertura de Tests
 
+El proyecto incluye cobertura exhaustiva de pruebas con JaCoCo configurado para generar reportes automáticos:
+
+```bash
+# Ejecutar tests con reporte de cobertura
+./mvnw test
+
+# Ver reporte de cobertura (generado automáticamente)
+# Localizado en: target/site/jacoco/index.html
 ```
-[INFO] Tests run: 25, Failures: 0, Errors: 0, Skipped: 0
-[INFO] 
-[INFO] --- jacoco-maven-plugin:0.8.8:report @ roman-numerals-kata ---
-[INFO] Loading execution data file target/jacoco.exec
-[INFO] Analyzed bundle 'roman-numerals-kata' with 6 classes
-[INFO] 
-[INFO] Overall coverage: 98.5%
-[INFO] - Line coverage: 98.2%
-[INFO] - Branch coverage: 100%
-```
+
+**Test Coverage incluye:**
+- Tests unitarios: 40+ casos de prueba
+- Tests de integración: Endpoints REST completos
+- Border cases: Valores límite (1, 3999, null, empty, invalid formats)
+- Casos de error: Excepciones personalizadas
+- Validaciones: Entrada inválida y formatos incorrectos
 
 ## 🔧 Configuración Adicional
 
-### application.properties
+### application.yml
 
-```properties
+```yaml
 spring:
-    application:
-        name: Roman Numbers Kata
-    jackson:
-        default-property-inclusion: non_null
-        serialization:
-            write-dates-as-timestamps: false
-            indent-output: true
+  application:
+    name: Roman Numbers Kata
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+      indent-output: true
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      enabled: true
+      force: true
+  error:
+    include-messages: always
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: health,info
 ```
 
 ## 📝 Notas de Implementación
@@ -291,31 +374,6 @@ spring:
 - Uso de `StringBuilder` para construcción eficiente de strings
 - Precálculo de valores en arrays estáticos
 - Validación temprana para fail-fast
-
-## 🚦 CI/CD (Opcional)
-
-### GitHub Actions Workflow
-
-```yaml
-name: Build and Test
-
-on: [push, pull_request]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-      - name: Run tests
-        run: mvn clean test
-      - name: Generate coverage report
-        run: mvn jacoco:report
-```
 
 ## 👥 Autor
 
